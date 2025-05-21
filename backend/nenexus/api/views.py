@@ -32,6 +32,7 @@ class PackageViewSet(viewsets.ModelViewSet):
     serializer_class = PackageSerializer
     filter_backends = (SearchFilter,)
     pagination_class = pagination.LimitOffsetPagination
+    search_fields = ('name',)
 
 @extend_schema_view(
     list=extend_schema(
