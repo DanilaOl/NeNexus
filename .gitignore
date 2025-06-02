@@ -1,5 +1,6 @@
 backend/.venv/
 backend/venv/
+backend/nenexus/media/
 .idea/
 
 # Django stuff:

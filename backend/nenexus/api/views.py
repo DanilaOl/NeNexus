@@ -1,7 +1,9 @@
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema_view, extend_schema, \
     OpenApiParameter
 from rest_framework import viewsets, pagination
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 
 from .serializers import PackageSerializer, PackageVersionSerializer
@@ -142,3 +144,11 @@ class PackageVersionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         package = get_object_or_404(Package, pk=self.kwargs['package_id'])
         return package.versions
+
+    @action(detail=True, methods=['GET'], url_path='download', url_name='download')
+    def download(self, request, pk=None, package_id=None):
+        instance = self.get_object()
+        file = open(instance.path.path, 'rb')
+        response = FileResponse(file, as_attachment=True)
+        response['Content-Type'] = 'application/x-zip-compressed'
+        return response
