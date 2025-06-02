@@ -15,7 +15,10 @@ export default function PackageCard({ pkg }) {
         style={{ cursor: 'pointer' }}
         onClick={handleClick}
       >
-        <h5 className="mb-1">{pkg.name}</h5>
+        <div style={{ display: 'flex', alignItems: 'start', flexDirection: 'column' }}>
+          <h5 className="mb-1">{pkg.name}</h5>
+          <p>Скачиваний:  {pkg.downloads_count}</p>
+        </div>
         <p className="mb-0 text-muted">{pkg.description}</p>
       </div>
 
@@ -23,7 +26,7 @@ export default function PackageCard({ pkg }) {
         <PackageModal
           show={showModal}
           onClose={() => setShowModal(false)}
-          pkg={pkg}
+          packageId={pkg.id}
         />
       )}
     </>

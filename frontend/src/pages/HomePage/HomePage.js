@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PackageCard from '../../components/PackageCard';
 import API_BASE_URL from '../../config/api';
 
@@ -9,6 +10,15 @@ export default function HomePage() {
   const [count, setCount] = useState(0);
   const [offset, setOffset] = useState(0);
   const limit = 8;
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const fetchPackages = async (query = '', offsetValue = 0) => {
     setLoading(true);
@@ -21,6 +31,11 @@ export default function HomePage() {
           },
         }
       );
+
+      if (res.status === 401) {
+        navigate('/login');
+        return;
+      }
 
       if (!res.ok) throw new Error('Ошибка при загрузке пакетов');
 
@@ -41,7 +56,7 @@ export default function HomePage() {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
-    setOffset(0); 
+    setOffset(0);
   };
 
   const handlePrev = () => {
@@ -84,26 +99,30 @@ export default function HomePage() {
         )}
       </div>
 
-      <div className="mt-auto pt-4 border-top d-flex justify-content-between align-items-center">
-        <button
-          className="btn btn-outline-primary"
-          onClick={handlePrev}
-          disabled={offset === 0}
-        >
-          Назад
-        </button>
-        <span>
-          Страница {Math.floor(offset / limit) + 1} из{' '}
-          {Math.ceil(count / limit)}
-        </span>
-        <button
-          className="btn btn-outline-primary"
-          onClick={handleNext}
-          disabled={offset + limit >= count}
-        >
-          Вперёд
-        </button>
-      </div>
+      {packages.length > 10 ? (
+        <div className="mt-auto pt-4 border-top d-flex justify-content-between align-items-center">
+          <button
+            className="btn btn-outline-primary"
+            onClick={handlePrev}
+            disabled={offset === 0}
+          >
+            Назад
+          </button>
+          <span>
+            Страница {Math.floor(offset / limit) + 1} из{' '}
+            {Math.ceil(count / limit)}
+          </span>
+          <button
+            className="btn btn-outline-primary"
+            onClick={handleNext}
+            disabled={offset + limit >= count}
+          >
+            Вперёд
+          </button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }
